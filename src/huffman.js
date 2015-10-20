@@ -34,8 +34,7 @@ var decodeString = function(input, huffmanTree) {
 
   var recurse = function(input, tree) {
     if(tree.val.length === 1) {
-      result += tree.val;
-      input.shift();
+      result += tree.val[0];
       recurse(input, huffmanTree);
     } else if(input[0] === '0') {
       input.shift();
@@ -47,7 +46,7 @@ var decodeString = function(input, huffmanTree) {
       return "error";
     }
   }
-  // debugger;
+
   recurse(inputArr, huffmanTree);
   return result;
 
@@ -65,6 +64,37 @@ var decodeString = function(input, huffmanTree) {
 // You may also use the `Tree` class that is provided in the file `misc.js`
 // Some corpuses are included as the variables `lorumIpsum` and `declaration`.
 var makeHuffmanTree = function(corpus) {
-  return new Tree();
+  
+  var charFreq = {};
+  var charDictionary = {};
+  var pq = new PriorityQueue();
+
+  for(var i = 0; i < corpus.length; i++) {
+    if(!charFreq.hasOwnProperty(corpus[i])) {
+      charFreq[corpus[i]] = 1;
+    } else {
+      charFreq[corpus[i]]++;
+    }
+  }
+
+  for(var key in charFreq) {  
+    var charTree = new Tree([key]);
+    pq.insert(charFreq[key], charTree);
+  }
+
+  while(pq.size() > 1) {
+    var nodeLeft = pq.extract();
+    var nodeRight = pq.extract();
+    var superNodeArr = nodeRight.val.val.concat(nodeLeft.val.val);
+    var superNode = new Tree(superNodeArr);
+    superNode.right = nodeRight.val;
+    superNode.left = nodeLeft.val;
+    var superNodeKey = nodeRight.key + nodeLeft.key;
+    pq.insert(superNodeKey, superNode);
+  }
+
+  var result = pq.extract().val;
+  return result;
+
 };
 

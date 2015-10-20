@@ -99,6 +99,6 @@ PriorityQueue.prototype.extract = function() {
             working = false;
         }
     }
-
+    
     return toReturn;
 };
